@@ -130,7 +130,7 @@ export const TaxInput = styled(InputWrapper)`
 
   justify-content: start;
   input {
-    width: 28%;
+    width: 100%;
   }
 `
 

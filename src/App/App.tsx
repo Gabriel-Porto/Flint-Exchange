@@ -2,6 +2,7 @@ import { GlobalStyle } from "../styles/global"
 import { ThemeProvider } from "styled-components"
 import { defaultTheme } from "../styles/theme"
 import ConvertIcon from "../assets/ConvertButtonIcon.svg"
+import InputMask from 'react-input-mask'
 
 import Logo from "../assets/Flint Currency Logo.svg"
 import {
@@ -16,6 +17,7 @@ import {
   DolarInput,
   TaxInput,
 } from "./Styles"
+
 
 export function App() {
   return (
@@ -39,15 +41,15 @@ export function App() {
             <Field>
               <label htmlFor="">Dólar</label>
               <DolarInput>
-                <span>$</span>
-                <input type="number" id="dolarInput" />
+                {/* <span>$</span> */}
+                <InputMask mask={'$9,99'} placeholder={'$'}  id="dolarInput" />
               </DolarInput>
             </Field>
             <Field>
               <label htmlFor="">Taxa do Estado</label>
               <TaxInput>
-                <input type="number" id="stateTaxInput" />
-                <span>%</span>
+                <InputMask mask={'9,99%'} placeholder={'%'} id="stateTaxInput" />
+                {/* <span>%</span> */}
               </TaxInput>
             </Field>
           </FormBlock>
