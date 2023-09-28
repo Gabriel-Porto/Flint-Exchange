@@ -16,11 +16,12 @@ export const GlobalStyle = createGlobalStyle`
     background-color: ${(props) => props.theme.background};
     color: ${(props) => props.theme.colors["gray-600"]};
     -webkit-font-smoothing: antialiased;
- 
-      font-family: ${(props) => props.theme.fontFamilies.SofiaSans};
+  }
+  
+  body, textarea, input, button {
+    font-family: ${(props) => props.theme.fontFamilies.SofiaSans};
       font-weight: 500;
       font-size: 1.125rem;
       word-wrap: break-word; //muito bom para responsividade de textos
   }
-  
 `

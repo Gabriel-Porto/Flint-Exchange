@@ -63,26 +63,75 @@ export const CurrencyCard = styled.div`
       line-height: normal;
     }
   }
+
+  label {
+    font-size: 1.8rem;
+  }
 `
 
 export const FormBlock = styled.div`
   display: flex;
   align-items: center;
-  gap: 2.4rem
-  
+  gap: 2.4rem;
 `
+
 export const Field = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+`
 
-  label {
-    font-size: 1.8rem;
-  }
-  
+export const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+
+  width: 16.8rem;
+  padding: 1.6rem;
+  height: 5.6rem;
+
+  font-size: 2rem;
+
+  box-shadow: 0px 8px 4px 0px rgba(13, 17, 27, 0.08);
+  border: 1px solid ${(props) => props.theme.colors["gray-600"]};
+  border-radius: 4px;
+
   input {
-    font-size: 1.6rem;
-    font-family: ${(props) => props.theme.fontFamilies.};
-;
+    height: 100%;
+
+    font-size: 2rem;
+    font-family: ${(props) => props.theme.fontFamilies.SofiaSans};
+    color: ${(props) => props.theme.colors["gray-600"]};
+    border: none;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+
+    & #stateTaxInput {
+      width: fit-content;
+    }
+  }
+
+  input:focus {
+    outline: 0;
   }
 `
+
+export const DolarInput = styled(InputWrapper)`
+  input {
+    width: 100%;
+  }
+`
+export const TaxInput = styled(InputWrapper)`
+  position: relative;
+
+  justify-content: start;
+  input {
+    width: 28%;
+  }
+`
+
+export const RadioBlock = styled.div``
