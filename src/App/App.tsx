@@ -18,12 +18,30 @@ import {
   RadioBlock,
   DolarInput,
   TaxInput,
+  ResultsCard,
 } from "./Styles"
+import { useEffect, useState } from "react"
+import axios from "axios"
 
 export function App() {
+  const [isConverted, setIsConverted] = useState(false)
+
+  const [dolarValue, setdolarValue] = useState("")
+
+  useEffect(() => {
+    async function getResults() {
+      const results = await axios.get(
+        "https://economia.awesomeapi.com.br/json/last/USD-BRL"
+      )
+      setdolarValue(results.data.USDBRL.ask) //.toFixed(2)
+    }
+    getResults()
+  }, [dolarValue])
+
   const handleSubmit = (event: any) => {
-    // event?.preventDefault()
+    event.preventDefault()
     console.log("entrou")
+    setIsConverted(true)
   }
 
   return (
@@ -38,59 +56,67 @@ export function App() {
             </footer>
           </AppName>
           <HeaderText>
-            <h3>14 de janeiro 2021 | 21:00 UTC</h3>
+            <h3>14 de janeiro 2021 | 21:00 UTC | $1 = R${dolarValue}</h3>
             <p>Dados de câmbio disponibilizados pela Morningstar.</p>
           </HeaderText>
         </header>
         <main>
-          <CurrencyCard onSubmit={handleSubmit}>
-            <FormBlock>
-              <Field>
-                <label htmlFor="">Dólar</label>
-                <DolarInput>
-                  {/* <span>$</span> */}
-                  <InputMask mask={"$9,99"} placeholder={"$"} id="dolarInput" />
-                </DolarInput>
-              </Field>
-              <Field>
-                <label htmlFor="">Taxa do Estado</label>
-                <TaxInput>
-                  <InputMask
-                    mask={"9,99%"}
-                    placeholder={"%"}
-                    id="stateTaxInput"
-                  />
-                  {/* <span>%</span> */}
-                </TaxInput>
-              </Field>
-            </FormBlock>
-            <RadioBlock>
-              <label htmlFor="purchaseType">Tipo de compra</label>
-              <div className="radioOptions">
-                <label htmlFor="purchaseTypeMoney">
-                  <input
-                    type="radio"
-                    name="purchaseType"
-                    id="purchaseTypeMoney"
-                  />
-                  <span>Dinheiro</span>
-                </label>
+          {isConverted ? (
+            <CurrencyCard onSubmit={handleSubmit}>
+              <FormBlock>
+                <Field>
+                  <label htmlFor="">Dólar</label>
+                  <DolarInput>
+                    <InputMask
+                      mask={"$9,99"}
+                      placeholder={"$"}
+                      id="dolarInput"
+                    />
+                  </DolarInput>
+                </Field>
+                <Field>
+                  <label htmlFor="">Taxa do Estado</label>
+                  <TaxInput>
+                    <InputMask
+                      mask={"9,99%"}
+                      placeholder={"%"}
+                      id="stateTaxInput"
+                    />
+                  </TaxInput>
+                </Field>
+              </FormBlock>
+              <RadioBlock>
+                <label htmlFor="purchaseType">Tipo de compra</label>
+                <div className="radioOptions">
+                  <label htmlFor="purchaseTypeMoney">
+                    <input
+                      type="radio"
+                      name="purchaseType"
+                      id="purchaseTypeMoney"
+                    />
+                    <span>Dinheiro</span>
+                  </label>
 
-                <label htmlFor="purchaseTypeCard">
-                  <input
-                    type="radio"
-                    name="purchaseType"
-                    id="purchaseTypeCard"
-                  />
-                  <span>Cartão</span>
-                </label>
-              </div>
-            </RadioBlock>
-            <button type={"submit"}>
-              <img src={ConvertIcon} alt="Convert Icon" />
-              Converter
-            </button>
-          </CurrencyCard>
+                  <label htmlFor="purchaseTypeCard">
+                    <input
+                      type="radio"
+                      name="purchaseType"
+                      id="purchaseTypeCard"
+                    />
+                    <span>Cartão</span>
+                  </label>
+                </div>
+              </RadioBlock>
+              <button type={"submit"}>
+                <img src={ConvertIcon} alt="Convert Icon" />
+                Converter
+              </button>
+            </CurrencyCard>
+          ) : (
+            <ResultsCard>
+              <button></button>
+            </ResultsCard>
+          )}
         </main>
         <img src={backgroungImg} alt="" />
         <img src={graphImg} alt="" />

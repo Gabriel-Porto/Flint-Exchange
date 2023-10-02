@@ -45,6 +45,7 @@ export const AppContainer = styled.div`
     gap: 4.8rem;
   }
 `
+
 export const HeaderText = styled.div`
   display: flex;
   flex-direction: column;
@@ -89,18 +90,7 @@ export const CurrencyCard = styled.form`
   flex-direction: column;
   align-items: start;
   justify-content: center;
-
-  height: 26.8rem;
-
   gap: 3.2rem;
-
-  .numberInputs {
-    label {
-      font-size: 1.4rem;
-      font-weight: 600;
-      line-height: normal;
-    }
-  }
 
   label {
     font-size: 1.8rem;
@@ -121,6 +111,10 @@ export const CurrencyCard = styled.form`
     line-height: 150%;
     font-family: ${(props) => props.theme.fontFamilies.SofiaSans};
   }
+
+  button:disabled {
+    background: ${(props) => props.theme.colors["gray-600"]};
+  }
 `
 
 export const FormBlock = styled.div`
@@ -128,13 +122,11 @@ export const FormBlock = styled.div`
   align-items: center;
   gap: 2.4rem;
 `
-
 export const Field = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
 `
-
 export const InputWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -174,7 +166,6 @@ export const InputWrapper = styled.div`
     outline: 0;
   }
 `
-
 export const DolarInput = styled(InputWrapper)`
   input {
     width: 100%;
@@ -185,7 +176,7 @@ export const TaxInput = styled(InputWrapper)`
 
   justify-content: start;
   input {
-    width: 100%;
+    width: 50%;
   }
 `
 
@@ -215,4 +206,14 @@ export const RadioBlock = styled.div`
     height: 2.4rem;
     width: 2.4rem;
   }
+`
+
+export const ResultsCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  gap: 3.2rem;
+
+  
 `
