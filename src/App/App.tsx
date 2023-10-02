@@ -1,7 +1,7 @@
 import { GlobalStyle } from "../styles/global"
 import { ThemeProvider } from "styled-components"
 import { defaultTheme } from "../styles/theme"
-import backgroungImg from "../assets/background_mask.svg"
+import backgroungImg from "../assets/Mask.jpg"
 import graphImg from "../assets/graph.svg"
 import ConvertIcon from "../assets/ConvertButtonIcon.svg"
 import InputMask from "react-input-mask"
