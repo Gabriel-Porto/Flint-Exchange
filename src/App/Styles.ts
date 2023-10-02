@@ -2,8 +2,43 @@ import styled from "styled-components"
 
 export const AppContainer = styled.div`
   height: 100vh;
-  padding: 6.4rem 0 0 6.4rem;
+  position: relative;
+
+  main {
+    margin: 0 27.5rem 0 6.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 10.5rem;
+  }
+
+  main svg {
+    margin-right: 27.2rem;
+  }
+
+  & > img {
+    max-width: 100vw;
+    max-height: 100%;
+
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    z-index: -1;
+  }
+
+  img + img {
+    width: 31rem;
+    height: 31rem;
+
+    position: absolute;
+    right: 17.8%;
+    top: 20rem;
+  }
+
   header {
+    padding: 6.4rem 0 0 6.4rem;
+
     width: fit-content;
     display: flex;
     align-items: center;
@@ -49,13 +84,16 @@ export const Bar = styled.div`
   width: 5.2rem;
 `
 
-export const CurrencyCard = styled.div`
+export const CurrencyCard = styled.form`
   display: flex;
   flex-direction: column;
   align-items: start;
   justify-content: center;
-  margin-top: 10.5rem;
+
+  height: 26.8rem;
+
   gap: 3.2rem;
+
   .numberInputs {
     label {
       font-size: 1.4rem;
@@ -66,6 +104,22 @@ export const CurrencyCard = styled.div`
 
   label {
     font-size: 1.8rem;
+  }
+
+  button {
+    display: flex;
+    padding: 16px;
+    gap: 16px;
+
+    border-radius: 8px;
+    border: 1px solid ${(props) => props.theme.colors.main};
+    background: ${(props) => props.theme.colors.main};
+
+    color: ${(props) => props.theme.colors.background};
+    font-weight: 600;
+    font-size: 1.6rem;
+    line-height: 150%;
+    font-family: ${(props) => props.theme.fontFamilies.SofiaSans};
   }
 `
 
@@ -96,6 +150,7 @@ export const InputWrapper = styled.div`
   box-shadow: 0px 8px 4px 0px rgba(13, 17, 27, 0.08);
   border: 1px solid ${(props) => props.theme.colors["gray-600"]};
   border-radius: 4px;
+  background-color: ${(props) => props.theme.colors.background};
 
   input {
     height: 100%;
@@ -134,4 +189,30 @@ export const TaxInput = styled(InputWrapper)`
   }
 `
 
-export const RadioBlock = styled.div``
+export const RadioBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  height: 6rem;
+
+  .radioOptions {
+    display: flex;
+    gap: 1.6rem;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    label span {
+      font-family: ${(props) => props.theme.fontFamilies.SofiaSans};
+    }
+  }
+
+  input[type="radio"] {
+    color: ${(props) => props.theme.colors.main};
+    height: 2.4rem;
+    width: 2.4rem;
+  }
+`

@@ -18,8 +18,9 @@ export const GlobalStyle = createGlobalStyle`
     -webkit-font-smoothing: antialiased;
   }
   
+  
   body, textarea, input, button {
-    font-family: ${(props) => props.theme.fontFamilies.SofiaSans};
+    font-family: ${(props) => props.theme.fontFamilies.Roboto};
       font-weight: 500;
       font-size: 1.125rem;
       word-wrap: break-word; //muito bom para responsividade de textos
