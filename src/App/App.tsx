@@ -26,21 +26,29 @@ import {
 import { useEffect, useState } from "react"
 import axios from "axios"
 
+interface IPurchaseType {
+  type: { taxaDinheiro: 1.1 } | { taxaCartão: 6.4 }
+}
+
 export function App() {
   const [isConverted, setIsConverted] = useState(false)
 
-  const [dolarValue, setdolarValue] = useState("")
+  const [amountToBeConverted, setAmountToBeConverted] = useState(0)
+  const [stateTax, setStateTax] = useState(0)
+  const [purchaseType, setPurchaseType] = useState<IPurchaseType>()
+  const [dolarValue, setdolarValue] = useState(0)
 
   useEffect(() => {
     async function getResults() {
       const results = await axios.get(
         "https://economia.awesomeapi.com.br/json/last/USD-BRL"
       )
-      setdolarValue(Number(results.data.USDBRL.ask).toFixed(2))
+      setdolarValue(Number(Number(results.data.USDBRL.ask).toFixed(2)))
     }
     getResults()
   }, [dolarValue])
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = (event: any) => {
     event.preventDefault()
     console.log("entrou")
@@ -76,7 +84,7 @@ export function App() {
               </Result>
               <ResultDetails>
                 <p>Compra no dinheiro e taxa de 5.3%</p>
-                <p>Cotação do dólar: $1,00 $1 = R${dolarValue}</p>
+                <p>Cotação do dólar: $1,00 = R${dolarValue}</p>
               </ResultDetails>
             </ResultsCard>
           ) : (
