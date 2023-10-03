@@ -27,7 +27,8 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 
 interface IPurchaseType {
-  type: { taxaDinheiro: 1.1 } | { taxaCartão: 6.4 }
+  1.1: number
+  6.4: number
 }
 
 export function App() {
@@ -35,7 +36,7 @@ export function App() {
 
   const [amountToBeConverted, setAmountToBeConverted] = useState(0)
   const [stateTax, setStateTax] = useState(0)
-  const [purchaseType, setPurchaseType] = useState<IPurchaseType>()
+  const [purchaseType, setPurchaseType] = useState<IPurchaseType>(1.1)
   const [dolarValue, setdolarValue] = useState(0)
 
   useEffect(() => {
@@ -46,12 +47,23 @@ export function App() {
       setdolarValue(Number(Number(results.data.USDBRL.ask).toFixed(2)))
     }
     getResults()
-  }, [dolarValue])
+  }, [])
+
+  const handleChangeDolarInput = (event: any) => {
+    setAmountToBeConverted(event.target.value)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleChangeTaxInput = (event: any) => {
+    setStateTax(Number(event.target.value))
+  }
+  console.log(stateTax)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = (event: any) => {
     event.preventDefault()
-    console.log("entrou")
+    const askWithMoney =
+      [amountToBeConverted + stateTax] * (dolarValue + purchaseType)
     setIsConverted(true)
   }
 
@@ -94,9 +106,12 @@ export function App() {
                   <label htmlFor="">Dólar</label>
                   <DolarInput>
                     <InputMask
-                      mask={"$9,99"}
+                      type="text"
+                      mask={"$*9,99"}
                       placeholder={"$"}
                       id="dolarInput"
+                      maskPlaceholder=" "
+                      onChange={handleChangeDolarInput}
                     />
                   </DolarInput>
                 </Field>
@@ -104,9 +119,11 @@ export function App() {
                   <label htmlFor="">Taxa do Estado</label>
                   <TaxInput>
                     <InputMask
-                      mask={"9,99%"}
+                      mask={" 9,99%"}
                       placeholder={"%"}
                       id="stateTaxInput"
+                      maskPlaceholder=" "
+                      onChange={handleChangeTaxInput}
                     />
                   </TaxInput>
                 </Field>
@@ -119,6 +136,7 @@ export function App() {
                       type="radio"
                       name="purchaseType"
                       id="purchaseTypeMoney"
+                      checked
                     />
                     <span>Dinheiro</span>
                   </label>
