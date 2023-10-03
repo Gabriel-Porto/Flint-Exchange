@@ -215,5 +215,63 @@ export const ResultsCard = styled.div`
   justify-content: center;
   gap: 3.2rem;
 
-  
+  width: 30.5rem;
+
+  button {
+    display: flex;
+    gap: 1.6rem;
+    align-items: center;
+    justify-content: center;
+
+    padding: 1.6rem;
+
+    border-radius: 8px;
+    border: 1px solid ${(props) => props.theme.colors["gray-400"]};
+    background: ${(props) => props.theme.colors.background};
+
+    font-size: 16px;
+    font-weight: 600;
+    font-family: ${(props) => props.theme.fontFamilies.SofiaSans};
+    line-height: 150%;
+
+    box-shadow: 0px 8px 4px 0px rgba(13, 17, 27, 0.08);
+  }
+
+  button:disabled {
+    background: ${(props) => props.theme.colors["gray-600"]};
+  }
+`
+
+export const Result = styled.div`
+  h2 {
+    color: ${(props) => props.theme.colors["gray-600"]};
+
+    font-family: ${(props) => props.theme.fontFamilies.SofiaSans};
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 160%;
+  }
+
+  h1 {
+    color: ${(props) => props.theme.colors.main};
+
+    font-family: ${(props) => props.theme.fontFamilies.SofiaSans};
+    font-size: 6.4rem;
+    font-weight: 600;
+    line-height: 125%;
+  }
+`
+
+export const ResultDetails = styled.div`
+  p {
+    color: ${(props) => props.theme.colors["gray-600"]};
+    font-family: ${(props) => props.theme.fontFamilies.Roboto};
+    font-size: 1.4rem;
+    font-weight: 500;
+    line-height: 228.571%;
+  }
+
+  p + p {
+    font-weight: 400;
+  }
 `

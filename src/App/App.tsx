@@ -5,6 +5,7 @@ import backgroungImg from "../assets/Mask.jpg"
 import graphImg from "../assets/graph.svg"
 import ConvertIcon from "../assets/ConvertButtonIcon.svg"
 import InputMask from "react-input-mask"
+import arrowLeft from "../assets/arrow-left.svg"
 
 import Logo from "../assets/Flint Currency Logo.svg"
 import {
@@ -19,6 +20,8 @@ import {
   DolarInput,
   TaxInput,
   ResultsCard,
+  Result,
+  ResultDetails,
 } from "./Styles"
 import { useEffect, useState } from "react"
 import axios from "axios"
@@ -33,7 +36,7 @@ export function App() {
       const results = await axios.get(
         "https://economia.awesomeapi.com.br/json/last/USD-BRL"
       )
-      setdolarValue(results.data.USDBRL.ask) //.toFixed(2)
+      setdolarValue(Number(results.data.USDBRL.ask).toFixed(2))
     }
     getResults()
   }, [dolarValue])
@@ -56,12 +59,27 @@ export function App() {
             </footer>
           </AppName>
           <HeaderText>
-            <h3>14 de janeiro 2021 | 21:00 UTC | $1 = R${dolarValue}</h3>
+            <h3>14 de janeiro 2021 | 21:00 UTC</h3>
             <p>Dados de câmbio disponibilizados pela Morningstar.</p>
           </HeaderText>
         </header>
         <main>
           {isConverted ? (
+            <ResultsCard>
+              <button onClick={() => setIsConverted(false)}>
+                <img src={arrowLeft} alt="Convert Icon" />
+                Voltar
+              </button>
+              <Result>
+                <h2>O resultado do cálculo é</h2>
+                <h1>R$ 240,56</h1>
+              </Result>
+              <ResultDetails>
+                <p>Compra no dinheiro e taxa de 5.3%</p>
+                <p>Cotação do dólar: $1,00 $1 = R${dolarValue}</p>
+              </ResultDetails>
+            </ResultsCard>
+          ) : (
             <CurrencyCard onSubmit={handleSubmit}>
               <FormBlock>
                 <Field>
@@ -112,10 +130,6 @@ export function App() {
                 Converter
               </button>
             </CurrencyCard>
-          ) : (
-            <ResultsCard>
-              <button></button>
-            </ResultsCard>
           )}
         </main>
         <img src={backgroungImg} alt="" />
