@@ -4,6 +4,7 @@ import { defaultTheme } from "../styles/theme"
 import backgroungImg from "../assets/Mask.jpg"
 import graphImg from "../assets/graph.svg"
 import ConvertIcon from "../assets/ConvertButtonIcon.svg"
+import { NumericFormat } from "react-number-format"
 
 import arrowLeft from "../assets/arrow-left.svg"
 
@@ -26,25 +27,22 @@ import {
 import { useEffect, useState } from "react"
 import axios from "axios"
 
-interface IPurchaseType {
-  1.1: number
-  6.4: number
-}
-
 export function App() {
   const [isConverted, setIsConverted] = useState(false)
 
   const [amountToBeConverted, setAmountToBeConverted] = useState(0)
   const [stateTax, setStateTax] = useState(0)
-  const [purchaseType, setPurchaseType] = useState<IPurchaseType>()
-  const [dolarValue, setdolarValue] = useState(0)
+  const [purchaseType, setPurchaseType] = useState("")
+  const [dolarValue, setDolarValue] = useState(0)
+
+  const [convertedValue, setConvertedValue] = useState(0)
 
   useEffect(() => {
     async function getResults() {
       const results = await axios.get(
         "https://economia.awesomeapi.com.br/json/last/USD-BRL"
       )
-      setdolarValue(Number(Number(results.data.USDBRL.ask).toFixed(2)))
+      setDolarValue(results.data.USDBRL.ask)
     }
     getResults()
   }, [])
@@ -56,17 +54,31 @@ export function App() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChangeTaxInput = (event: any) => {
-    setStateTax(Number(event.target.value))
+    setStateTax(event.target.value)
   }
-  console.log(stateTax)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = (event: any) => {
     event.preventDefault()
-    // const askWithMoney =
-    //   [amountToBeConverted + stateTax] * (dolarValue + purchaseType)
+    if (purchaseType === "dinheiro") {
+      setConvertedValue((amountToBeConverted + stateTax) * (dolarValue + 1.1))
+    }
+    if (purchaseType === "cartão") {
+      setConvertedValue((amountToBeConverted + stateTax + 6.4) * dolarValue)
+    }
     setIsConverted(true)
   }
+
+  // function currencyFormatter(value) {
+  //   if (!Number(value)) return ""
+
+  //   const amount = new Intl.NumberFormat("pt-BR", {
+  //     style: "currency",
+  //     currency: "BRL",
+  //   }).format(value / 100)
+
+  //   return `${amount}`
+  // }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -93,11 +105,15 @@ export function App() {
               </button>
               <Result>
                 <h2>O resultado do cálculo é</h2>
-                <h1>R$ 240,56</h1>
+                <h1>{convertedValue}</h1>
               </Result>
               <ResultDetails>
-                <p>Compra no dinheiro e taxa de 5.3%</p>
-                <p>Cotação do dólar: $1,00 = R${dolarValue}</p>
+                <p>
+                  Compra no {purchaseType} e taxa de {stateTax}
+                </p>
+                <p>
+                  Cotação do dólar: $1,00 = R${Number(dolarValue).toFixed(2)}
+                </p>
               </ResultDetails>
             </ResultsCard>
           ) : (
@@ -106,10 +122,14 @@ export function App() {
                 <Field>
                   <label htmlFor="">Dólar</label>
                   <DolarInput>
-                    <input
-                      type="text"
+                    <NumericFormat
                       placeholder={"$"}
                       id="dolarInput"
+                      allowNegative={false}
+                      thousandSeparator="."
+                      prefix={"$"}
+                      decimalScale={2}
+                      decimalSeparator=","
                       onChange={handleChangeDolarInput}
                     />
                   </DolarInput>
@@ -117,9 +137,15 @@ export function App() {
                 <Field>
                   <label htmlFor="">Taxa do Estado</label>
                   <TaxInput>
-                    <input
+                    <NumericFormat
                       placeholder={"%"}
                       id="stateTaxInput"
+                      allowNegative={false}
+                      thousandSeparator="."
+                      suffix={"%"}
+                      decimalScale={3}
+                      decimalSeparator=","
+                      value={stateTax}
                       onChange={handleChangeTaxInput}
                     />
                   </TaxInput>
@@ -133,7 +159,8 @@ export function App() {
                       type="radio"
                       name="purchaseType"
                       id="purchaseTypeMoney"
-                      checked
+                      onSelect={() => setPurchaseType("dinheiro")}
+                      defaultChecked
                     />
                     <span>Dinheiro</span>
                   </label>
@@ -142,6 +169,7 @@ export function App() {
                     <input
                       type="radio"
                       name="purchaseType"
+                      onSelect={() => setPurchaseType("cartão")}
                       id="purchaseTypeCard"
                     />
                     <span>Cartão</span>
