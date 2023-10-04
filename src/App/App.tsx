@@ -4,7 +4,6 @@ import { defaultTheme } from "../styles/theme"
 import backgroungImg from "../assets/Mask.jpg"
 import graphImg from "../assets/graph.svg"
 import ConvertIcon from "../assets/ConvertButtonIcon.svg"
-import Input from "react-input-mask"
 
 import arrowLeft from "../assets/arrow-left.svg"
 
@@ -107,14 +106,10 @@ export function App() {
                 <Field>
                   <label htmlFor="">Dólar</label>
                   <DolarInput>
-                    <Input
+                    <input
                       type="text"
-                      mask={"$99,99"}
-
-                      maskChar={null} 
                       placeholder={"$"}
                       id="dolarInput"
-                      maskPlaceholder=" "
                       onChange={handleChangeDolarInput}
                     />
                   </DolarInput>
@@ -122,11 +117,9 @@ export function App() {
                 <Field>
                   <label htmlFor="">Taxa do Estado</label>
                   <TaxInput>
-                    <Input
-                      mask={" 9,99%"}
+                    <input
                       placeholder={"%"}
                       id="stateTaxInput"
-                      maskPlaceholder=" "
                       onChange={handleChangeTaxInput}
                     />
                   </TaxInput>
