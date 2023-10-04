@@ -4,7 +4,8 @@ import { defaultTheme } from "../styles/theme"
 import backgroungImg from "../assets/Mask.jpg"
 import graphImg from "../assets/graph.svg"
 import ConvertIcon from "../assets/ConvertButtonIcon.svg"
-import InputMask from "react-input-mask"
+import Input from "react-input-mask"
+
 import arrowLeft from "../assets/arrow-left.svg"
 
 import Logo from "../assets/Flint Currency Logo.svg"
@@ -36,7 +37,7 @@ export function App() {
 
   const [amountToBeConverted, setAmountToBeConverted] = useState(0)
   const [stateTax, setStateTax] = useState(0)
-  const [purchaseType, setPurchaseType] = useState<IPurchaseType>(1.1)
+  const [purchaseType, setPurchaseType] = useState<IPurchaseType>()
   const [dolarValue, setdolarValue] = useState(0)
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export function App() {
     getResults()
   }, [])
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChangeDolarInput = (event: any) => {
     setAmountToBeConverted(event.target.value)
   }
@@ -62,8 +64,8 @@ export function App() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = (event: any) => {
     event.preventDefault()
-    const askWithMoney =
-      [amountToBeConverted + stateTax] * (dolarValue + purchaseType)
+    // const askWithMoney =
+    //   [amountToBeConverted + stateTax] * (dolarValue + purchaseType)
     setIsConverted(true)
   }
 
@@ -105,9 +107,11 @@ export function App() {
                 <Field>
                   <label htmlFor="">Dólar</label>
                   <DolarInput>
-                    <InputMask
+                    <Input
                       type="text"
-                      mask={"$*9,99"}
+                      mask={"$99,99"}
+
+                      maskChar={null} 
                       placeholder={"$"}
                       id="dolarInput"
                       maskPlaceholder=" "
@@ -118,7 +122,7 @@ export function App() {
                 <Field>
                   <label htmlFor="">Taxa do Estado</label>
                   <TaxInput>
-                    <InputMask
+                    <Input
                       mask={" 9,99%"}
                       placeholder={"%"}
                       id="stateTaxInput"
