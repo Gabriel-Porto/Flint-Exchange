@@ -269,9 +269,9 @@ export const ResultDetails = styled.div`
     font-size: 1.4rem;
     font-weight: 500;
     line-height: 228.571%;
-  }
 
-  p + p {
-    font-weight: 400;
+    span {
+      font-weight: 400;
+    }
   }
 `

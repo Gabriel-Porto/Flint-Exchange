@@ -32,7 +32,7 @@ export function App() {
 
   const [amountToBeConverted, setAmountToBeConverted] = useState(0)
   const [stateTax, setStateTax] = useState(0)
-  const [purchaseType, setPurchaseType] = useState("")
+  const [purchaseType, setPurchaseType] = useState("dinheiro")
   const [dolarValue, setDolarValue] = useState(0)
 
   const [convertedValue, setConvertedValue] = useState(0)
@@ -48,18 +48,9 @@ export function App() {
   }, [])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChangeDolarInput = (event: any) => {
-    setAmountToBeConverted(event.target.value)
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChangeTaxInput = (event: any) => {
-    setStateTax(event.target.value)
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = (event: any) => {
     event.preventDefault()
+
     if (purchaseType === "dinheiro") {
       setConvertedValue((amountToBeConverted + stateTax) * (dolarValue + 1.1))
     }
@@ -105,14 +96,15 @@ export function App() {
               </button>
               <Result>
                 <h2>O resultado do cálculo é</h2>
-                <h1>{convertedValue}</h1>
+                <h1>R$ {convertedValue.toFixed(2).replace(".", ",")}</h1>
               </Result>
               <ResultDetails>
                 <p>
-                  Compra no {purchaseType} e taxa de {stateTax}
+                  Compra no {purchaseType} e taxa de <span>{stateTax}</span>
                 </p>
                 <p>
-                  Cotação do dólar: $1,00 = R${Number(dolarValue).toFixed(2)}
+                  Cotação do dólar:{" "}
+                  <span>$1,00 = R${Number(dolarValue).toFixed(2)}</span>
                 </p>
               </ResultDetails>
             </ResultsCard>
@@ -130,7 +122,11 @@ export function App() {
                       prefix={"$"}
                       decimalScale={2}
                       decimalSeparator=","
-                      onChange={handleChangeDolarInput}
+                      onValueChange={(values) => {
+                        if (values.floatValue) {
+                          setAmountToBeConverted(values.floatValue)
+                        }
+                      }}
                     />
                   </DolarInput>
                 </Field>
@@ -138,15 +134,18 @@ export function App() {
                   <label htmlFor="">Taxa do Estado</label>
                   <TaxInput>
                     <NumericFormat
-                      placeholder={"%"}
+                      placeholder={"0 %"}
                       id="stateTaxInput"
                       allowNegative={false}
                       thousandSeparator="."
                       suffix={"%"}
-                      decimalScale={3}
+                      decimalScale={2}
                       decimalSeparator=","
-                      value={stateTax}
-                      onChange={handleChangeTaxInput}
+                      onValueChange={(values) => {
+                        if (values.floatValue) {
+                          setStateTax(values.floatValue)
+                        }
+                      }}
                     />
                   </TaxInput>
                 </Field>
@@ -159,7 +158,7 @@ export function App() {
                       type="radio"
                       name="purchaseType"
                       id="purchaseTypeMoney"
-                      onSelect={() => setPurchaseType("dinheiro")}
+                      onChange={() => setPurchaseType("dinheiro")}
                       defaultChecked
                     />
                     <span>Dinheiro</span>
@@ -169,14 +168,17 @@ export function App() {
                     <input
                       type="radio"
                       name="purchaseType"
-                      onSelect={() => setPurchaseType("cartão")}
+                      onChange={() => setPurchaseType("cartão")}
                       id="purchaseTypeCard"
                     />
                     <span>Cartão</span>
                   </label>
                 </div>
               </RadioBlock>
-              <button type={"submit"}>
+              <button
+                type={"submit"}
+                disabled={amountToBeConverted && stateTax ? false : true}
+              >
                 <img src={ConvertIcon} alt="Convert Icon" />
                 Converter
               </button>
