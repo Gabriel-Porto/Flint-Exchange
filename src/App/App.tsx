@@ -1,14 +1,10 @@
+import { useEffect, useState } from "react"
+import axios from "axios"
+import { NumericFormat } from "react-number-format"
+
 import { GlobalStyle } from "../styles/global"
 import { ThemeProvider } from "styled-components"
 import { defaultTheme } from "../styles/theme"
-import backgroungImg from "../assets/Mask.jpg"
-import graphImg from "../assets/graph.svg"
-import ConvertIcon from "../assets/ConvertButtonIcon.svg"
-import { NumericFormat } from "react-number-format"
-
-import arrowLeft from "../assets/arrow-left.svg"
-
-import Logo from "../assets/Flint Currency Logo.svg"
 import {
   AppContainer,
   AppName,
@@ -24,8 +20,11 @@ import {
   Result,
   ResultDetails,
 } from "./Styles"
-import { useEffect, useState } from "react"
-import axios from "axios"
+import arrowLeft from "../assets/arrow-left.svg"
+import Logo from "../assets/Flint Currency Logo.svg"
+import graphImg from "../assets/graph.svg"
+import backgroungImg from "../assets/Mask.jpg"
+import ConvertIcon from "../assets/ConvertButtonIcon.svg"
 
 export function App() {
   const [isConverted, setIsConverted] = useState(false)
@@ -42,7 +41,7 @@ export function App() {
       const results = await axios.get(
         "https://economia.awesomeapi.com.br/json/last/USD-BRL"
       )
-      setDolarValue(results.data.USDBRL.ask)
+      setDolarValue(Number(results.data.USDBRL.ask))
     }
     getResults()
   }, [])
@@ -52,10 +51,14 @@ export function App() {
     event.preventDefault()
 
     if (purchaseType === "dinheiro") {
-      setConvertedValue((amountToBeConverted + stateTax) * (dolarValue + 1.1))
+      setConvertedValue(
+        (amountToBeConverted + (amountToBeConverted * (stateTax / 100))) * (dolarValue + dolarValue*(1.1 / 100))
+      )
     }
     if (purchaseType === "cartão") {
-      setConvertedValue((amountToBeConverted + stateTax + 6.4) * dolarValue)
+      setConvertedValue(
+        (amountToBeConverted + (amountToBeConverted * (stateTax / 100)) + (amountToBeConverted * (6.4 / 100))) * dolarValue
+      )
     }
     setIsConverted(true)
   }
@@ -90,7 +93,14 @@ export function App() {
         <main>
           {isConverted ? (
             <ResultsCard>
-              <button onClick={() => setIsConverted(false)}>
+              <button
+                onClick={() => {
+                  setIsConverted(false)
+                  setAmountToBeConverted(0)
+                  setStateTax(0)
+                  setPurchaseType("dinheiro")
+                }}
+              >
                 <img src={arrowLeft} alt="Convert Icon" />
                 Voltar
               </button>
@@ -100,7 +110,7 @@ export function App() {
               </Result>
               <ResultDetails>
                 <p>
-                  Compra no {purchaseType} e taxa de <span>{stateTax}</span>
+                  Compra no {purchaseType} e taxa de <span>{stateTax}%</span>
                 </p>
                 <p>
                   Cotação do dólar:{" "}
@@ -112,7 +122,7 @@ export function App() {
             <CurrencyCard onSubmit={handleSubmit}>
               <FormBlock>
                 <Field>
-                  <label htmlFor="">Dólar</label>
+                  <label htmlFor="dolarInput">Dólar</label>
                   <DolarInput>
                     <NumericFormat
                       placeholder={"$"}
@@ -123,7 +133,7 @@ export function App() {
                       decimalScale={2}
                       decimalSeparator=","
                       onValueChange={(values) => {
-                        if (values.floatValue) {
+                        if (values.floatValue || values.floatValue === 0) {
                           setAmountToBeConverted(values.floatValue)
                         }
                       }}
@@ -131,7 +141,7 @@ export function App() {
                   </DolarInput>
                 </Field>
                 <Field>
-                  <label htmlFor="">Taxa do Estado</label>
+                  <label htmlFor="stateTaxInput">Taxa do Estado</label>
                   <TaxInput>
                     <NumericFormat
                       placeholder={"0 %"}
@@ -142,7 +152,7 @@ export function App() {
                       decimalScale={2}
                       decimalSeparator=","
                       onValueChange={(values) => {
-                        if (values.floatValue) {
+                        if (values.floatValue || values.floatValue === 0) {
                           setStateTax(values.floatValue)
                         }
                       }}
@@ -177,7 +187,13 @@ export function App() {
               </RadioBlock>
               <button
                 type={"submit"}
-                disabled={amountToBeConverted && stateTax ? false : true}
+                disabled={
+                  amountToBeConverted ||
+                  (amountToBeConverted === 0 && stateTax) ||
+                  stateTax === 0
+                    ? false
+                    : true
+                }
               >
                 <img src={ConvertIcon} alt="Convert Icon" />
                 Converter
