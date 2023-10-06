@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
+import { useState } from "react"
+import api from "../services/api"
 import { NumericFormat } from "react-number-format"
+import useSWR from "swr"
 
 import { GlobalStyle } from "../styles/global"
 import { ThemeProvider } from "styled-components"
@@ -33,18 +34,25 @@ export function App() {
   const [stateTax, setStateTax] = useState(0)
   const [purchaseType, setPurchaseType] = useState("dinheiro")
   const [dolarValue, setDolarValue] = useState(0)
+  const [dateOfFetch, setDateOfFetch] = useState(0)
 
   const [convertedValue, setConvertedValue] = useState(0)
 
-  useEffect(() => {
-    async function getResults() {
-      const results = await axios.get(
-        "https://economia.awesomeapi.com.br/json/last/USD-BRL"
-      )
-      setDolarValue(Number(results.data.USDBRL.ask))
-    }
-    getResults()
-  }, [])
+  useSWR("last/USD-BRL", async (url) => {
+    const results = await api.get(url)
+    setDateOfFetch(results.data.USDBRL.create_date)
+    setDolarValue(Number(results.data.USDBRL.ask))
+  })
+
+  // useEffect(() => {
+  //   async function getResults() {
+  //     const results = await axios.get(
+  //       "https://economia.awesomeapi.com.br/json/last/USD-BRL"
+  //     )
+  //     setDolarValue(Number(results.data.USDBRL.ask))
+  //   }
+  //   getResults()
+  // }, [])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = (event: any) => {
@@ -52,12 +60,16 @@ export function App() {
 
     if (purchaseType === "dinheiro") {
       setConvertedValue(
-        (amountToBeConverted + (amountToBeConverted * (stateTax / 100))) * (dolarValue + dolarValue*(1.1 / 100))
+        (amountToBeConverted + amountToBeConverted * (stateTax / 100)) *
+          (dolarValue + dolarValue * (1.1 / 100))
       )
     }
     if (purchaseType === "cartão") {
       setConvertedValue(
-        (amountToBeConverted + (amountToBeConverted * (stateTax / 100)) + (amountToBeConverted * (6.4 / 100))) * dolarValue
+        (amountToBeConverted +
+          amountToBeConverted * (stateTax / 100) +
+          amountToBeConverted * (6.4 / 100)) *
+          dolarValue
       )
     }
     setIsConverted(true)
@@ -86,7 +98,7 @@ export function App() {
             </footer>
           </AppName>
           <HeaderText>
-            <h3>14 de janeiro 2021 | 21:00 UTC</h3>
+            <h3>14 de janeiro 2021 | 21:00 UTC {dateOfFetch}</h3>
             <p>Dados de câmbio disponibilizados pela Morningstar.</p>
           </HeaderText>
         </header>
