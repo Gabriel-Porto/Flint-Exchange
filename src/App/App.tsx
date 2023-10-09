@@ -26,6 +26,9 @@ import Logo from "../assets/Flint Currency Logo.svg"
 import graphImg from "../assets/graph.svg"
 import backgroungImg from "../assets/Mask.jpg"
 import ConvertIcon from "../assets/ConvertButtonIcon.svg"
+import { format, parseISO } from "date-fns"
+import { ptBR } from "date-fns/locale"
+import { utcToZonedTime } from "date-fns-tz"
 
 interface ICurrencyConvert {
   code: string
@@ -44,22 +47,22 @@ interface ICurrencyConvert {
 export function App() {
   const [isConverted, setIsConverted] = useState(false)
 
-  const [amountToBeConverted, setAmountToBeConverted] = useState(0)
-  const [stateTax, setStateTax] = useState(0)
+  const [amountToBeConverted, setAmountToBeConverted] = useState(null || Number)
+  const [stateTax, setStateTax] = useState(null || Number)
   const [purchaseType, setPurchaseType] = useState("dinheiro")
   const [dolarValue, setDolarValue] = useState(0)
-  const [dateOfFetch, setDateOfFetch] = useState(0)
+  const [dateOfFetch, setDateOfFetch] = useState("")
 
   const [convertedValue, setConvertedValue] = useState(0)
 
-  const fetcher = (url) =>
+  const fetcher = (url: string) =>
     api.get(url).then((res) => {
       setDolarValue(Number(res.data.USDBRL.ask))
-      setDateOfFetch(res.data.USDBRL.create_date)
+      setDateOfFetch(formatDate(res.data.USDBRL.create_date))
       return res.data
     })
 
-  const { data, mutate } = useSWR("last/USD-BRL", fetcher, {
+  useSWR("last/USD-BRL", fetcher, {
     refreshInterval: 86400,
     revalidateIfStale: false,
     revalidateOnFocus: false,
@@ -108,6 +111,24 @@ export function App() {
   //   return `${amount}`
   // }
 
+  function formatDate(inputDateString: string) {
+    const inputDate = parseISO(inputDateString)
+
+    const utcDate = utcToZonedTime(inputDate, "Etc/UTC")
+
+    const formattedDate = format(utcDate, "dd 'de' MMMM yyyy", {
+      locale: ptBR,
+    })
+    const formattedTime = format(utcDate, "HH:mm", { locale: ptBR })
+
+    return `${formattedDate} | ${formattedTime} UTC`
+  }
+
+  console.log(amountToBeConverted)
+  console.log(stateTax)
+  console.log(dolarValue)
+  console.log(purchaseType)
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppContainer>
@@ -120,7 +141,7 @@ export function App() {
             </footer>
           </AppName>
           <HeaderText>
-            <h3>14 de janeiro 2021 | 21:00 UTC {dateOfFetch}</h3>
+            <h3>{dateOfFetch}</h3>
             <p>Dados de câmbio disponibilizados pela Morningstar.</p>
           </HeaderText>
         </header>
@@ -167,7 +188,7 @@ export function App() {
                       decimalScale={2}
                       decimalSeparator=","
                       onValueChange={(values) => {
-                        if (values.floatValue || values.floatValue === 0) {
+                        if (values.floatValue) {
                           setAmountToBeConverted(values.floatValue)
                         }
                       }}
@@ -186,7 +207,7 @@ export function App() {
                       decimalScale={2}
                       decimalSeparator=","
                       onValueChange={(values) => {
-                        if (values.floatValue || values.floatValue === 0) {
+                        if (values.floatValue) {
                           setStateTax(values.floatValue)
                         }
                       }}
@@ -221,16 +242,10 @@ export function App() {
               </RadioBlock>
               <button
                 type={"submit"}
-                disabled={
-                  amountToBeConverted ||
-                  (amountToBeConverted === 0 && stateTax) ||
-                  stateTax === 0
-                    ? false
-                    : true
-                }
-                onClick={async () => {
-                  mutate({ ...data, ask: data.ask })
-                }}
+                disabled={amountToBeConverted && stateTax ? false : true}
+                // onClick={async () => {
+                //   mutate({ ...data, ask: data.ask })
+                // }}
               >
                 <img src={ConvertIcon} alt="Convert Icon" />
                 Converter
