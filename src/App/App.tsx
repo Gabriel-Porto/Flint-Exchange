@@ -27,6 +27,20 @@ import graphImg from "../assets/graph.svg"
 import backgroungImg from "../assets/Mask.jpg"
 import ConvertIcon from "../assets/ConvertButtonIcon.svg"
 
+interface ICurrencyConvert {
+  code: string
+  codein: string
+  name: string
+  high: string
+  low: string
+  varBid: string
+  pctChange: string
+  bid: string
+  ask: string
+  timestamp: string
+  create_date: string
+}
+
 export function App() {
   const [isConverted, setIsConverted] = useState(false)
 
@@ -38,10 +52,18 @@ export function App() {
 
   const [convertedValue, setConvertedValue] = useState(0)
 
-  useSWR("last/USD-BRL", async (url) => {
-    const results = await api.get(url)
-    setDateOfFetch(results.data.USDBRL.create_date)
-    setDolarValue(Number(results.data.USDBRL.ask))
+  const fetcher = (url) =>
+    api.get(url).then((res) => {
+      setDolarValue(Number(res.data.USDBRL.ask))
+      setDateOfFetch(res.data.USDBRL.create_date)
+      return res.data
+    })
+
+  const { data, mutate } = useSWR("last/USD-BRL", fetcher, {
+    refreshInterval: 86400,
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
   })
 
   // useEffect(() => {
@@ -206,6 +228,9 @@ export function App() {
                     ? false
                     : true
                 }
+                onClick={async () => {
+                  mutate({ ...data, ask: data.ask })
+                }}
               >
                 <img src={ConvertIcon} alt="Convert Icon" />
                 Converter
