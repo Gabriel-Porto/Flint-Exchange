@@ -21,6 +21,8 @@ export const AppContainer = styled.div`
     max-width: 100vw;
     max-height: 100%;
 
+    height: 100%;
+
     position: absolute;
     bottom: 0px;
     right: 0px;

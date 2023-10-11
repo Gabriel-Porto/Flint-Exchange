@@ -30,20 +30,6 @@ import { format, parseISO } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { utcToZonedTime } from "date-fns-tz"
 
-interface ICurrencyConvert {
-  code: string
-  codein: string
-  name: string
-  high: string
-  low: string
-  varBid: string
-  pctChange: string
-  bid: string
-  ask: string
-  timestamp: string
-  create_date: string
-}
-
 export function App() {
   const [isConverted, setIsConverted] = useState(false)
 
@@ -58,26 +44,18 @@ export function App() {
   const fetcher = (url: string) =>
     api.get(url).then((res) => {
       setDolarValue(Number(res.data.USDBRL.ask))
+      console.log({ data: res.data })
+
       setDateOfFetch(formatDate(res.data.USDBRL.create_date))
       return res.data
     })
 
   useSWR("last/USD-BRL", fetcher, {
-    refreshInterval: 86400,
+    refreshInterval: 24 * 60 * 60,
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })
-
-  // useEffect(() => {
-  //   async function getResults() {
-  //     const results = await axios.get(
-  //       "https://economia.awesomeapi.com.br/json/last/USD-BRL"
-  //     )
-  //     setDolarValue(Number(results.data.USDBRL.ask))
-  //   }
-  //   getResults()
-  // }, [])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = (event: any) => {
@@ -100,16 +78,6 @@ export function App() {
     setIsConverted(true)
   }
 
-  // function currencyFormatter(value) {
-  //   if (!Number(value)) return ""
-
-  //   const amount = new Intl.NumberFormat("pt-BR", {
-  //     style: "currency",
-  //     currency: "BRL",
-  //   }).format(value / 100)
-
-  //   return `${amount}`
-  // }
 
   function formatDate(inputDateString: string) {
     const inputDate = parseISO(inputDateString)
@@ -123,11 +91,6 @@ export function App() {
 
     return `${formattedDate} | ${formattedTime} UTC`
   }
-
-  console.log(amountToBeConverted)
-  console.log(stateTax)
-  console.log(dolarValue)
-  console.log(purchaseType)
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -243,9 +206,6 @@ export function App() {
               <button
                 type={"submit"}
                 disabled={amountToBeConverted && stateTax ? false : true}
-                // onClick={async () => {
-                //   mutate({ ...data, ask: data.ask })
-                // }}
               >
                 <img src={ConvertIcon} alt="Convert Icon" />
                 Converter
