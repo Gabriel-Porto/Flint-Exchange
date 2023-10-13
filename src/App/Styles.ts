@@ -34,8 +34,8 @@ export const AppContainer = styled.div`
     height: 31rem;
 
     position: absolute;
-    right: 17.8%;
-    top: 20rem;
+    right: 17.8vw;
+    top: 20vh;
   }
 
   header {
@@ -112,10 +112,12 @@ export const CurrencyCard = styled.form`
     font-size: 1.6rem;
     line-height: 150%;
     font-family: ${(props) => props.theme.fontFamilies.SofiaSans};
+    cursor:  pointer;
   }
 
   button:disabled {
     background: ${(props) => props.theme.colors["gray-600"]};
+    cursor: not-allowed;
   }
 `
 

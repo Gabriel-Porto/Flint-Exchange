@@ -2,6 +2,13 @@ import { useState } from "react"
 import api from "../services/api"
 import { NumericFormat } from "react-number-format"
 import useSWR from "swr"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+
+import { format, parseISO } from "date-fns"
+import { ptBR } from "date-fns/locale"
+import { utcToZonedTime } from "date-fns-tz"
 
 import { GlobalStyle } from "../styles/global"
 import { ThemeProvider } from "styled-components"
@@ -21,14 +28,12 @@ import {
   Result,
   ResultDetails,
 } from "./Styles"
+
 import arrowLeft from "../assets/arrow-left.svg"
 import Logo from "../assets/Flint Currency Logo.svg"
 import graphImg from "../assets/graph.svg"
 import backgroungImg from "../assets/Mask.jpg"
 import ConvertIcon from "../assets/ConvertButtonIcon.svg"
-import { format, parseISO } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import { utcToZonedTime } from "date-fns-tz"
 
 export function App() {
   const [isConverted, setIsConverted] = useState(false)
@@ -41,11 +46,11 @@ export function App() {
 
   const [convertedValue, setConvertedValue] = useState(0)
 
+  console.count("render")
+
   const fetcher = (url: string) =>
     api.get(url).then((res) => {
       setDolarValue(Number(res.data.USDBRL.ask))
-      console.log({ data: res.data })
-
       setDateOfFetch(formatDate(res.data.USDBRL.create_date))
       return res.data
     })
@@ -57,9 +62,31 @@ export function App() {
     revalidateOnReconnect: false,
   })
 
+  const schema = z.object({
+    amountToBeConverted: z.number().min(1, { message: "Campo Obrigatório" }),
+    stateTax: z.number().min(1, { message: "Campo Obrigatório" }),
+    purchaseType: z.enum(["dinheiro", "cartão"]),
+  })
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      amountToBeConverted: 0,
+      stateTax: 0,
+      purchaseType: "dinheiro",
+    },
+    mode: "onChange",
+  })
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSubmit = (event: any) => {
+  const onSubmit = (data) => {
     event.preventDefault()
+    console.log(data);
 
     if (purchaseType === "dinheiro") {
       setConvertedValue(
@@ -77,7 +104,6 @@ export function App() {
     }
     setIsConverted(true)
   }
-
 
   function formatDate(inputDateString: string) {
     const inputDate = parseISO(inputDateString)
@@ -114,9 +140,7 @@ export function App() {
               <button
                 onClick={() => {
                   setIsConverted(false)
-                  setAmountToBeConverted(0)
-                  setStateTax(0)
-                  setPurchaseType("dinheiro")
+
                 }}
               >
                 <img src={arrowLeft} alt="Convert Icon" />
@@ -137,45 +161,61 @@ export function App() {
               </ResultDetails>
             </ResultsCard>
           ) : (
-            <CurrencyCard onSubmit={handleSubmit}>
+            <CurrencyCard onSubmit={handleSubmit(onSubmit)}>
               <FormBlock>
                 <Field>
                   <label htmlFor="dolarInput">Dólar</label>
                   <DolarInput>
-                    <NumericFormat
-                      placeholder={"$"}
-                      id="dolarInput"
-                      allowNegative={false}
-                      thousandSeparator="."
-                      prefix={"$"}
-                      decimalScale={2}
-                      decimalSeparator=","
-                      onValueChange={(values) => {
-                        if (values.floatValue) {
-                          setAmountToBeConverted(values.floatValue)
-                        }
-                      }}
+                    <Controller
+                      name="amountToBeConverted"
+                      control={control}
+                      render={(props) => (
+                        <NumericFormat
+                          name={props.field.name}
+                          id="dolarInput"
+                          value={props.field.value}
+                          placeholder={"$ 0"}
+                          allowNegative={false}
+                          thousandSeparator="."
+                          prefix={"$"}
+                          decimalScale={2}
+                          decimalSeparator=","
+                          onValueChange={({ floatValue }) => {
+                            props.field.onChange(floatValue)
+                          }}
+                          {...props}
+                        />
+                      )}
                     />
                   </DolarInput>
+                  <p>{errors?.amountToBeConverted?.message}</p>
                 </Field>
                 <Field>
                   <label htmlFor="stateTaxInput">Taxa do Estado</label>
                   <TaxInput>
-                    <NumericFormat
-                      placeholder={"0 %"}
-                      id="stateTaxInput"
-                      allowNegative={false}
-                      thousandSeparator="."
-                      suffix={"%"}
-                      decimalScale={2}
-                      decimalSeparator=","
-                      onValueChange={(values) => {
-                        if (values.floatValue) {
-                          setStateTax(values.floatValue)
-                        }
-                      }}
+                    <Controller
+                      name="stateTax"
+                      control={control}
+                      render={(props) => (
+                        <NumericFormat
+                          name={props.field.name}
+                          value={props.field.value}
+                          id="stateTaxInput"
+                          placeholder={"0 %"}
+                          allowNegative={false}
+                          thousandSeparator="."
+                          suffix={"%"}
+                          decimalScale={2}
+                          decimalSeparator=","
+                          onValueChange={({ floatValue }) => {
+                            props.field.onChange(floatValue)
+                          }}
+                          {...props}
+                        />
+                      )}
                     />
                   </TaxInput>
+                  <p>{errors?.stateTax?.message}</p>
                 </Field>
               </FormBlock>
               <RadioBlock>
@@ -184,9 +224,9 @@ export function App() {
                   <label htmlFor="purchaseTypeMoney">
                     <input
                       type="radio"
-                      name="purchaseType"
+                      {...register("purchaseType")}
                       id="purchaseTypeMoney"
-                      onChange={() => setPurchaseType("dinheiro")}
+                      value="dinheiro"
                       defaultChecked
                     />
                     <span>Dinheiro</span>
@@ -195,8 +235,8 @@ export function App() {
                   <label htmlFor="purchaseTypeCard">
                     <input
                       type="radio"
-                      name="purchaseType"
-                      onChange={() => setPurchaseType("cartão")}
+                      {...register("purchaseType")}
+                      value="cartão"
                       id="purchaseTypeCard"
                     />
                     <span>Cartão</span>
@@ -204,8 +244,8 @@ export function App() {
                 </div>
               </RadioBlock>
               <button
-                type={"submit"}
-                disabled={amountToBeConverted && stateTax ? false : true}
+                type="submit"
+                // disabled={!isDirty || !isValid}
               >
                 <img src={ConvertIcon} alt="Convert Icon" />
                 Converter
