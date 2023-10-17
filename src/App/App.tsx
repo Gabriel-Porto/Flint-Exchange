@@ -45,7 +45,7 @@ export function App() {
 
   const [convertedValue, setConvertedValue] = useState(0)
 
-  console.count("render")
+  //console.count("render")
 
   const fetcher = (url: string) =>
     api.get(url).then((res) => {
@@ -141,8 +141,6 @@ export function App() {
               <button
                 onClick={() => {
                   setIsConverted(false)
-                  setStateTax(0)
-                  setPurchaseType("")
                   reset()
                 }}
               >

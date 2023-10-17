@@ -219,7 +219,7 @@ export const ResultsCard = styled.div`
   justify-content: center;
   gap: 3.2rem;
 
-  width: 30.5rem;
+  width: fit-content;
 
   button {
     display: flex;
