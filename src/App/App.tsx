@@ -38,7 +38,6 @@ import ConvertIcon from "../assets/ConvertButtonIcon.svg"
 export function App() {
   const [isConverted, setIsConverted] = useState(false)
 
-  const [amountToBeConverted, setAmountToBeConverted] = useState(null || Number)
   const [stateTax, setStateTax] = useState(null || Number)
   const [purchaseType, setPurchaseType] = useState("dinheiro")
   const [dolarValue, setDolarValue] = useState(0)
@@ -72,7 +71,8 @@ export function App() {
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    reset,
+    formState: { errors, isDirty, isValid },
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -84,21 +84,22 @@ export function App() {
   })
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onSubmit = (data) => {
-    event.preventDefault()
-    console.log(data);
+  const onSubmit = (data: any) => {
+    setStateTax(data.stateTax)
+    setPurchaseType(data.purchaseType)
 
-    if (purchaseType === "dinheiro") {
+    if (data.purchaseType === "dinheiro") {
       setConvertedValue(
-        (amountToBeConverted + amountToBeConverted * (stateTax / 100)) *
+        (data.amountToBeConverted +
+          data.amountToBeConverted * (data.stateTax / 100)) *
           (dolarValue + dolarValue * (1.1 / 100))
       )
     }
-    if (purchaseType === "cartão") {
+    if (data.purchaseType === "cartão") {
       setConvertedValue(
-        (amountToBeConverted +
-          amountToBeConverted * (stateTax / 100) +
-          amountToBeConverted * (6.4 / 100)) *
+        (data.amountToBeConverted +
+          data.amountToBeConverted * (data.stateTax / 100) +
+          data.amountToBeConverted * (6.4 / 100)) *
           dolarValue
       )
     }
@@ -115,7 +116,7 @@ export function App() {
     })
     const formattedTime = format(utcDate, "HH:mm", { locale: ptBR })
 
-    return `${formattedDate} | ${formattedTime} UTC`
+    return `${formattedDate} \xa0\xa0 | \xa0\xa0 ${formattedTime} UTC`
   }
 
   return (
@@ -140,7 +141,9 @@ export function App() {
               <button
                 onClick={() => {
                   setIsConverted(false)
-
+                  setStateTax(0)
+                  setPurchaseType("")
+                  reset()
                 }}
               >
                 <img src={arrowLeft} alt="Convert Icon" />
@@ -171,8 +174,8 @@ export function App() {
                       control={control}
                       render={(props) => (
                         <NumericFormat
-                          name={props.field.name}
                           id="dolarInput"
+                          name={props.field.name}
                           value={props.field.value}
                           placeholder={"$ 0"}
                           allowNegative={false}
@@ -198,9 +201,9 @@ export function App() {
                       control={control}
                       render={(props) => (
                         <NumericFormat
+                          id="stateTaxInput"
                           name={props.field.name}
                           value={props.field.value}
-                          id="stateTaxInput"
                           placeholder={"0 %"}
                           allowNegative={false}
                           thousandSeparator="."
@@ -243,10 +246,7 @@ export function App() {
                   </label>
                 </div>
               </RadioBlock>
-              <button
-                type="submit"
-                // disabled={!isDirty || !isValid}
-              >
+              <button type="submit" disabled={!isDirty || !isValid}>
                 <img src={ConvertIcon} alt="Convert Icon" />
                 Converter
               </button>
